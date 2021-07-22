@@ -3,7 +3,6 @@
 #include <thread>
 #include <Dbt.h>	// Device plugging/unplugging
 
-
 bool CWindow::Create(const uint32_t xPos, const uint32_t yPos, const uint32_t winWidth, const uint32_t winHeight, const std::wstring title)
 {
 	// Data/params for setup
@@ -49,14 +48,18 @@ bool CWindow::Create(const uint32_t xPos, const uint32_t yPos, const uint32_t wi
 }
 
 
-int CWindow::Run(){
+int CWindow::Run()
+{
 
-	MSG msg = { nullptr };
+	float deltaT = 0.0f;
+	float worldT = 0.0f;
+	MSG msg = { 0 };
 
 	m_mainTimer.Reset();
 	m_mainTimer.Start();
 	
-	while (!m_ExitFlag && msg.message != WM_QUIT) {
+	while (!m_ExitFlag && msg.message != WM_QUIT) 
+	{
 
 		if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE) && msg.hwnd != INVALID_HANDLE_VALUE)
 		{
@@ -67,8 +70,8 @@ int CWindow::Run(){
 		{
 			m_mainTimer.Tick();
 
-			float deltaT = m_mainTimer.DeltaTime();
-			float worldT = m_mainTimer.TotalTime();
+			deltaT = m_mainTimer.DeltaTime();
+			worldT = m_mainTimer.TotalTime();
 
 			// Update status
 			//UIRenderer::Update(deltaT, worldT);
@@ -78,7 +81,14 @@ int CWindow::Run(){
 
 			// buffer swap
 			// . . .
+
+			if (m_logicCallback)
+			{
+				m_logicCallback(deltaT);
+			}
+
 		}
+
 	}
 
 	return static_cast<int>(m_ExitFlag ? 0 : msg.wParam);
@@ -116,6 +126,16 @@ LRESULT CWindow::MsgProc(HWND const hWnd, UINT const msg, WPARAM const wParam, L
 			break;
 
 		case WM_EXITSIZEMOVE:
+			//GLfloat aspect;
+
+			//glViewport(0, 0, width, height);
+
+			//aspect = (GLfloat)width / height;
+
+			//glMatrixMode(GL_PROJECTION);
+			//glLoadIdentity();
+			//gluPerspective(45.0, aspect, 3.0, 7.0);
+			//glMatrixMode(GL_MODELVIEW);
 			break;
 
 		case WM_DEVICECHANGE:
@@ -127,6 +147,10 @@ LRESULT CWindow::MsgProc(HWND const hWnd, UINT const msg, WPARAM const wParam, L
 			{
 				// Check for removal of device
 			}
+			break;
+
+		case WM_CREATE:
+
 			break;
 
 		case WM_PAINT:
@@ -145,7 +169,7 @@ LRESULT CWindow::MsgProc(HWND const hWnd, UINT const msg, WPARAM const wParam, L
 
 LRESULT CWindow::MessageRouter(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CWindow* window{ nullptr };
+	static CWindow* window{ nullptr };
 
 	if (msg == WM_CREATE)
 	{
@@ -157,4 +181,3 @@ LRESULT CWindow::MessageRouter(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	window = reinterpret_cast<CWindow*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	return window->MsgProc(hWnd, msg, wParam, lParam);
 }
-

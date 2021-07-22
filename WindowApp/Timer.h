@@ -1,21 +1,19 @@
 #pragma once
 #include <windows.h>
-
-// Timer class
-// From Frank D Luna's  "3D Game Programming with DirectX 11"
+#include <cstdint>
 
 class Timer 
 {
 	private:
 
-		double   mSecondsPerCount;
-		double   mDeltaTime;
-		__int64  mBaseTime;
-		__int64  mPausedTime;
-		__int64  mStopTime;
-		__int64  mPrevTime;
-		__int64  mCurrTime;
-		bool     mStopped;
+		double      mSecondsPerCount;
+		double      mDeltaTime;
+		uint64_t    mBaseTime;
+		uint64_t    mPausedTime;
+		uint64_t    mStopTime;
+		uint64_t    mPrevTime;
+		uint64_t    mCurrTime;
+		bool        mStopped;
 
 	public:
 
@@ -24,10 +22,10 @@ class Timer
 
 		float  TotalTime()const;
 		float  DeltaTime()const;
-		void   Reset(); // Call before message loop.
-		void   Start(); // Call when unpaused.
-		void   Stop();  // Call when paused.
-		void   Tick();  // Call every frame.
+		void   Reset();  // Call before message loop.
+		void   Start();  // Call when unpaused.
+		void   Stop();   // Call when paused.
+		void   Tick();   // Call every frame.
 
 };
 
